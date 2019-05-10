@@ -6,7 +6,7 @@ import ics
 ### Convert any csv meeting a format to ics
 def csv2ics(filename):
     try:
-        with open(filename+'.csv', newline='') as csvF:
+        with open('../Test_Files/' +filename+'.csv', newline='') as csvF:
             table = csv.DictReader(csvF) #use a dict to easily find specific headers
             cal = ics.Calendar()
             for row in table:
@@ -36,7 +36,7 @@ def csv2ics(filename):
                 #Now save the event in the Calendar
                 cal.events.add(ev)
             # create and save the ics file
-            f = open(filename+'.ics', 'w')
+            f = open('../New_Files/' +filename+'.ics', 'w')
             f.writelines(cal)
             f.close()
             print("Succesfully Created",'../New_Files/' + filename + '.ics')
@@ -53,9 +53,9 @@ def csv2ics(filename):
 from icalendar import Calendar, vDatetime
 def ics2csv(filename):
     try:
-        with open(filename+'.ics','rb') as g:
+        with open('../Test_Files/' +filename+'.ics','rb') as g:
             gcal = Calendar.from_ical(g.read())
-            csvF = open(filename + '.csv', 'w')
+            csvF = open('../New_Files/' +filename + '.csv', 'w')
             lines = ['SUMMARY,DTSTART,DTEND,NOTES,LOCATION']
             for component in gcal.walk():
                 if component.name == "VEVENT":
@@ -90,29 +90,3 @@ if __name__ == "__main__":
   # execute only if run as a script
   ics2csv('test')
   csv2ics('test')
-
-'''
-strTable =
-['<html>',
-'  <table>',
-'    <tr>',
-'      <th>Char</th>',
-'      <th>ASCII</th>',
-'    </tr>',
-'  </table>',
-'</html>']
-#soup = BeautifulSoup('', 'html.parser')
-
-for num in range(33,48):
- symb = chr(num)
- strRW = "<tr><td>"+str(symb)+ "</td><td>"+str(num)+"</td></tr>"
- strTable = strTable+strRW
-
-strTable = strTable+"</table></html>"
-
-hs = open("asciiCharHTMLTable.html", 'w')
-hs.write(strTable)
-hs.close()
-
-print (strTable)
-'''
