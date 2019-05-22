@@ -1,6 +1,9 @@
 import csv
-import
+import urllib.request
+from time import sleep
+from pathlib import Path
 from bs4 import BeautifulSoup as bs
+
 ##--------------------------------- CSV to HTML ---------------------------##
 def csv2html(filename):
     try:
@@ -26,10 +29,7 @@ def csv2html(filename):
     except FileNotFoundError:
         print('That please recheck the file, all files in Test_Files folder')
 
-from bs4 import BeautifulSoup as bs
-import urllib.request
-from time import sleep
-from pathlib import Path
+#from bs4 import BeautifulSoup as bs
 
 def html2Array(source):
     try:
@@ -49,6 +49,11 @@ def html2Array(source):
             tbl = [] #
             #find the table rows
             trs = table.findChildren('tr')
+            ths = trs[0].findChildren('th')
+            row = []
+            for th in ths:
+                row.append(th.text)
+            tbl.append(",".join(row))
             for tr in trs:
                 #find the cells
                 tds = tr.findChildren('td')
@@ -79,26 +84,37 @@ def html2csv(name):
     if f.is_file():
         cv = name+'.csv'
     else:
-        cv = "ninpou.csv"
+        cv = "Website.csv"
     tables = html2Array(name)
-
+    # if there is only a single table save it
     if tables == None: print('Do Nothing')
     elif len(tables) == 1:
         f = open(cv, 'w+')
         for i in tables[0]:
             f.write(i+'\n')
-            print(i)
         f.close
-        #f = open(cv).read()
-        #print(f)
         print('** Successfully Created',cv,' **')
     else:
+        # if there are multiple tables Keep only 1 allow the user to pick which one they want
         print("*"*80,"\nFrom below pick the table you want")
         i = 1
         for t in tables:
-            print('[',i,']\t', t)
+            print('[',i,']:\n', '\n'.join(t))
             i += 1
+        usrIn = input("Enter Choice:")
+        try:
+            x = int(usrIn)
+            if x <= len(tables):
+                f = open('../New_Files/'+name.split("/")[-1]+".csv", 'w+')
+                for i in tables[x-1]:
+                    f.write(i+'\n')
+                f.close()
+                #break
+        except ValueError:
+            print("Please enter an integer")
+
 
 if __name__ == "__main__":
-    html2csv('http://www.genevievedupuis.com/BloodBowl/WeatherTable.php')
-    csv2html('../Test_Files/test')
+    #html2csv('http://www.genevievedupuis.com/BloodBowl/WeatherTable.php')
+    #csv2html('../Test_Files/test')
+    html2csv('one')
