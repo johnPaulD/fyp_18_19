@@ -14,8 +14,8 @@ class Transformer:
     ##---------------------- Start Supporting Functions ----------------------##
     -------------------------------------------------------------------------'''
 
-    #{Function:------------------------------------------------------------------------##
-    #---------- Pick a table from the list of tables sent ----------------------------}##
+    #{ Support function: -----------------------------------------------------##
+    #---------- Pick a table from the list of tables sent -------------------}##
     def pick_table(self, tables):
         print("*"*80,
                     "\nFrom below pick the table you want")
@@ -39,8 +39,9 @@ class Transformer:
         except ValueError:
             print("Did not enter the right number")
 
-    #{Function:------------------------------------------------------------------------##
-    #---------- Pick a table from the list of tables sent ----------------------------}##
+
+    #{ Support function: -----------------------------------------------------##
+    #---------- Pick a table from the list of tables sent -------------------}##
     def html_data(self):
         html = ['<!-DOCTYPE html>\n<html>\n\t<style>table, th, td { border: 1px solid black; border-collapse: collapse; }</style>\n\t<body>\n\t\t<table>\n']
         end = '\t\t</table>\n\t</body>\n</html>'
@@ -60,7 +61,9 @@ class Transformer:
         html.append(end)
         return ''.join(html)
 
-    ## Sub if the file exists as html or eml
+
+    #{ Support function: -----------------------------------------------------##
+    #---------- Open file as either an eml, html or link --------------------}##
     def file_check(self, filename):
         try:
             page = "" #Store the data read from files
@@ -75,14 +78,15 @@ class Transformer:
             else: page = urllib.request.urlopen(filename).read()
             return page
         except FileExistsError: print('File not Found')
+        except urllib.error.URLError: print('File or link does not exist')
 
     ############################################################################
     ##----------------------- End supporting functions -----------------------##
     ############################################################################
 
-    '''-------------------------------------------------------------------------
-    ##------------------ Functions to get details from file ------------------##
-    -------------------------------------------------------------------------'''
+    '''______________________________________________________________________---
+    ###----------------- Functions to get details from file -----------------###
+    ---______________________________________________________________________'''
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Get List from csv
@@ -102,8 +106,6 @@ class Transformer:
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Get List from html or eml
     *** """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" '''
-
-
     def get_html(self, filename):
         try:
             page = self.file_check(filename)
@@ -147,8 +149,6 @@ class Transformer:
         # ----- Problems in reading files or url information --------#
         except FileNotFoundError:
             print('That please recheck the file, all files in Test_Files folder')
-        except urllib.error.URLError:
-            print('File or link does not exist')
         except ValueError:
             print('File or link does not exist')
 
@@ -186,6 +186,7 @@ class Transformer:
                 self.table = rows
         except FileNotFoundError:
             print('File does not exist')
+
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Get List from Tex
@@ -230,9 +231,10 @@ class Transformer:
     ##-------------- End Functions to get details from file ------------------##
     ############################################################################
 
-    '''-------------------------------------------------------------------------
-    ##------------------ Functions to get details from file ------------------##
-    -------------------------------------------------------------------------'''
+
+    '''______________________________________________________________________---
+    ###--------------- Functions to convert the list to files ---------------###
+    ---______________________________________________________________________'''
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Make an html file from the List [table]
@@ -241,6 +243,7 @@ class Transformer:
         htf = open('../New_Files/'+filename+'.html', 'w+')
         htf.write(self.html_data())
         htf.close()
+
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Make an Eml file from the List [table]
@@ -263,6 +266,7 @@ class Transformer:
             out = generator.Generator(eml_file)
             out.flatten(mail)
 
+
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Make a csv file from the List [table]
     *** """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" '''
@@ -271,6 +275,7 @@ class Transformer:
         for row in self.table:
             f.write('"'+'","'.join(row)+'"\n')
         f.close()
+
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Make a Tex file from the List [table]
@@ -297,6 +302,62 @@ class Transformer:
         doc.generate_tex('../New_Files/'+filename)
         #/* doc.generate_pdf() #: Needs latex compiler to work
 
+
+    ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
+        Make a ics file from the List [table]
+    *** """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" '''
+    def mk_ics(filename):
+        from io import StringIO
+        try:
+            # make sure that table is not empty
+            if self.table == []:
+                print('fill the list first')
+                return None
+
+            #convert table to a csv and turn
+            STR = ''
+            for row in self.table: STR += '"'+'","'.join(row)+'"\n'
+            csvF = StringIO(STR)
+            table = csv.DictReader(csvF) #use a dict to easily find specific headers
+            cal = ics.Calendar()
+            for row in table:
+                # create a new calendar Event and fill it
+                ev = ics.Event()
+                #-# Get the different attributes necessary for an event in the Calendar #-#
+                if row['SUMMARY'] != None:
+                    ev.name = row['SUMMARY']
+                else:
+                    ev.name = ''
+
+                # No calender event is complete without start and end date
+                if row['DTSTART'] != None and row['DTEND'] != None:
+                    form = 'MM-DD-YYYY hh:mm a' #Format
+                    ev.begin = arrow.get(row['DTSTART'],form)
+                    ev.end = arrow.get(row['DTEND'],form)
+                else:
+                    raise Exception('Must Have both start and end dates')
+                if row['NOTES'] != None:
+                    ev.description = row['NOTES']
+                elif row['DESCRIPTION'] != None:
+                    ev.description = row['DESCRIPTION']
+
+                if row['LOCATION'] != None:
+                    ev.location = row['LOCATION']
+
+                #Now save the event in the Calendar
+                cal.events.add(ev)
+            # create and save the ics file
+            f = open('../New_Files/' +filename+'.ics', 'w')
+            f.writelines(cal)
+            f.close()
+            print("Succesfully Created",'../New_Files/' + filename + '.ics')
+        #Error Handling options
+        #except FileNotFoundError:
+        #    print("This file does not exist",filename)
+        except KeyError:
+            print('Check that the file head structure follows:\n',
+                  'SUMMARY,DTSTART,DTEND,NOTES,LOCATION')
+
 if __name__ == "__main__":
     link=('http://www.genevievedupuis.com/BloodBowl/WeatherTable.php')
     ft = Transformer()
@@ -321,4 +382,5 @@ if __name__ == "__main__":
     ft.get_html(name+"_html")
     print(30*'#',name+"_html", '*'*30 )
     print(ft.table,'\n')
+    ft.mk_ics(name+"_html")
     #'''
