@@ -299,21 +299,26 @@ class Transformer:
 
 if __name__ == "__main__":
     link=('http://www.genevievedupuis.com/BloodBowl/WeatherTable.php')
-
     ft = Transformer()
     name ='test'
-    print(30*'#',name+"_csv", '*'*30 )
-    print(ft.table)
+    '''
     ft.get_csv(name+"_csv")
+    print(30*'#',name+"_csv", '*'*30 )
+    print(ft.table,'\n')
+
+    ft.get_html(name+"_eml")
     print(30*'#',name+"_eml", '*'*30 )
-    print(ft.table)
-    ft.get_eml(name+"_eml")
-    print(30*'#',name+"_tex", '*'*30 )
-    print(ft.table)
+    print(ft.table,'\n')
+
     ft.get_tex(name+"_tex")
-    print(30*'#',name+"_ics", '*'*30 )
-    print(ft.table)
+    print(30*'#',name+"_tex", '*'*30 )
+    print(ft.table,'\n')
+    '#''
     ft.get_ics(name+"_ics")
-    print(30*'#',name+"_html", '*'*30 )
-    print(ft.table)
+    print(30*'#',name+"_ics", '*'*30 )
+    print(ft.table,'\n')
+    '''
     ft.get_html(name+"_html")
+    print(30*'#',name+"_html", '*'*30 )
+    print(ft.table,'\n')
+    #'''
