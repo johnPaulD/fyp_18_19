@@ -9,11 +9,11 @@ from icalendar import Calendar, vDatetime
 
 class Transformer:
     def __init__(self):
-        self.table = [] #* Table that will store the parsed table in the same format for all data types
-    '''-------------------------------------------------------------------------
-    ##---------------------- Start Supporting Functions ----------------------##
-    -------------------------------------------------------------------------'''
+        self.table = [] # Store the tables
 
+    """__ _ _ _ _ _ _ _ _ _ _ _ _ _ _ __ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ __###
+    ###___________________ Start Supporting Functions ___________________###
+    ###__________________________________________________________________"""
     #{ Support function: -----------------------------------------------------##
     #---------- Pick a table from the list of tables sent -------------------}##
     def pick_table(self, tables):
@@ -43,7 +43,7 @@ class Transformer:
     #{ Support function: -----------------------------------------------------##
     #---------- Pick a table from the list of tables sent -------------------}##
     def html_data(self):
-        html = ['<!-DOCTYPE html>\n<html>\n\t<style>table, th, td { border: 1px solid black; border-collapse: collapse; }</style>\n\t<body>\n\t\t<table>\n']
+        html = ['<!DOCTYPE html>\n<html>\n\t<style>table, th, td { border: 1px solid black; border-collapse: collapse; }</style>\n\t<body>\n\t\t<table>\n']
         end = '\t\t</table>\n\t</body>\n</html>'
 
         th = ""
@@ -79,14 +79,13 @@ class Transformer:
             return page
         except FileExistsError: print('File not Found')
         except urllib.error.URLError: print('File or link does not exist')
+################################################################################
+##------------------------- End supporting functions -------------------------##
+################################################################################
 
-    ############################################################################
-    ##----------------------- End supporting functions -----------------------##
-    ############################################################################
-
-    '''______________________________________________________________________---
-    ###----------------- Functions to get details from file -----------------###
-    ---______________________________________________________________________'''
+    """__ _ _ _ _ _ _ _ _ _ _ _ _ _ _ __ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ __###
+    ###_______________ Functions to get details from file _______________###
+    ###______________________________________________________________________"""
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Get List from csv
@@ -220,6 +219,7 @@ class Transformer:
             #split up the rows into cells
             for j in table:
                 x = table.index(j)
+                # remove the special characters and unneccesary spaces
                 j = j.replace(' & ','&').replace(' &','&').replace('& ','&').replace('{','').replace('}','')
                 table[x] = j.split('&')
             if table[-1] == ['']: table.pop(-1)
@@ -227,14 +227,14 @@ class Transformer:
 
         except FileNotFoundError:
             print('file does not exist')
-    ############################################################################
-    ##-------------- End Functions to get details from file ------------------##
-    ############################################################################
+################################################################################
+##---------------- End Functions to get details from file --------------------##
+################################################################################
 
 
-    '''______________________________________________________________________---
-    ###--------------- Functions to convert the list to files ---------------###
-    ---______________________________________________________________________'''
+    '''__________________________________________________________________###
+    ###_____________ Functions to convert the list to files _____________###
+    ###__________________________________________________________________'''
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Make an html file from the List [table]
@@ -243,7 +243,7 @@ class Transformer:
         htf = open('../New_Files/'+filename+'.html', 'w+')
         htf.write(self.html_data())
         htf.close()
-
+        print("Succesfully Created",'../New_Files/' + filename + '.html')
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Make an Eml file from the List [table]
@@ -265,7 +265,7 @@ class Transformer:
         with open("../New_Files/"+filename+'.eml', 'w+') as eml_file:
             out = generator.Generator(eml_file)
             out.flatten(mail)
-
+        print("Succesfully Created",'../New_Files/' + filename + '.eml')
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Make a csv file from the List [table]
@@ -275,6 +275,7 @@ class Transformer:
         for row in self.table:
             f.write('"'+'","'.join(row)+'"\n')
         f.close()
+        print("Succesfully Created",'../New_Files/' + filename + '.csv')
 
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
@@ -300,13 +301,16 @@ class Transformer:
                 print(row)
                 table.add_hline()
         doc.generate_tex('../New_Files/'+filename)
+        print("Succesfully Created",'../New_Files/' + filename + '.tex')
         #/* doc.generate_pdf() #: Needs latex compiler to work
 
 
     ''' """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" ***
         Make a ics file from the List [table]
     *** """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" '''
-    def mk_ics(filename):
+    def mk_ics(self, filename):
+        import ics
+        import arrow
         from io import StringIO
         try:
             # make sure that table is not empty
@@ -331,7 +335,8 @@ class Transformer:
 
                 # No calender event is complete without start and end date
                 if row['DTSTART'] != None and row['DTEND'] != None:
-                    form = 'MM-DD-YYYY hh:mm a' #Format
+                    print(row['DTSTART'])
+                    form = 'MM-DD-YYYY HH:mm a' #Format
                     ev.begin = arrow.get(row['DTSTART'],form)
                     ev.end = arrow.get(row['DTEND'],form)
                 else:
@@ -351,34 +356,34 @@ class Transformer:
             f.writelines(cal)
             f.close()
             print("Succesfully Created",'../New_Files/' + filename + '.ics')
-        #Error Handling options
-        #except FileNotFoundError:
-        #    print("This file does not exist",filename)
         except KeyError:
             print('Check that the file head structure follows:\n',
                   'SUMMARY,DTSTART,DTEND,NOTES,LOCATION')
+################################################################################
+##----------------- End Functions to save table to files ---------------------##
+################################################################################
 
 if __name__ == "__main__":
     link=('http://www.genevievedupuis.com/BloodBowl/WeatherTable.php')
     ft = Transformer()
     name ='test'
-    '''
+    #'''
     ft.get_csv(name+"_csv")
     print(30*'#',name+"_csv", '*'*30 )
     print(ft.table,'\n')
-
+    #'''
     ft.get_html(name+"_eml")
     print(30*'#',name+"_eml", '*'*30 )
     print(ft.table,'\n')
-
+    #'''
     ft.get_tex(name+"_tex")
     print(30*'#',name+"_tex", '*'*30 )
     print(ft.table,'\n')
-    '#''
+    #'''
     ft.get_ics(name+"_ics")
     print(30*'#',name+"_ics", '*'*30 )
     print(ft.table,'\n')
-    '''
+    #'''
     ft.get_html(name+"_html")
     print(30*'#',name+"_html", '*'*30 )
     print(ft.table,'\n')
