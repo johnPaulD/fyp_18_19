@@ -32,7 +32,7 @@ def csv2ics(filename):
 
                 if row['LOCATION'] != None:
                     ev.location = row['LOCATION']
-                #'''
+
                 #Now save the event in the Calendar
                 cal.events.add(ev)
             # create and save the ics file
