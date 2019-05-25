@@ -1,3 +1,13 @@
+############################## File_Transform.py ###############################
+# Author:_________________| University:____________________| Std no:__________ #
+# _______ John Paul Mendy |____________ Leeds University __|________ sc15jpm _ #
+################################################################################
+#Purpose:                                                                      #
+#         This is a program that reads in information from various different   #
+#         file types and returns creates a table from this information. This   #
+#         information will be used to convert the table to many other formats  #
+################################################################################
+
 import csv
 import urllib.request
 from time import sleep
@@ -5,8 +15,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup as bs
 from pylatex import Document, Tabular, Section
 from icalendar import Calendar, vDatetime
-
-
+#
 class Transformer:
     def __init__(self):
         self.table = [] # Store the tables
