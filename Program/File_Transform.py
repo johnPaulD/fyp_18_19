@@ -89,20 +89,6 @@ class Transformer:
         except FileExistsError: print('File not Found')
         except urllib.error.URLError: print('File or link does not exist')
 
-    def pick_format(self, function, filename):
-        funs = {
-            'mk_csv':mk_csv,
-            'mk_eml':mk_eml,
-            'mk_html':mk_html,
-            'mk_ics':mk_ics,
-            'mk_tex':mk_tex,
-            'get_csv':get_csv,
-            'get_eml':get_html,
-            'get_html': get_html,
-            'get_ics': get_ics,
-            'get_tex':get_tex
-        }
-        fun[function](filename)
 ################################################################################
 ##------------------------- End supporting functions -------------------------##
 ################################################################################
@@ -116,7 +102,7 @@ class Transformer:
     *** """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" '''
     def get_csv(self, filename):
         try:
-            with open ('Test_Files/'+filename+'.csv', newline='') as csvF:
+            with open ('../Test_Files/'+filename+'.csv', newline='') as csvF:
                 table = csv.reader(csvF)
                 tmp = []
                 for row in table:
@@ -322,7 +308,6 @@ class Transformer:
             table.add_hline()
             for row in self.table:
                 table.add_row(row)
-                print(row)
                 table.add_hline()
         doc.generate_tex('../New_Files/'+filename)
         print("Succesfully Created",'../New_Files/' + filename + '.tex')
@@ -359,7 +344,6 @@ class Transformer:
 
                 # No calender event is complete without start and end date
                 if row['DTSTART'] != None and row['DTEND'] != None:
-                    print(row['DTSTART'])
                     form = 'MM-DD-YYYY HH:mm a' #Format
                     ev.begin = arrow.get(row['DTSTART'],form)
                     ev.end = arrow.get(row['DTEND'],form)
@@ -386,6 +370,22 @@ class Transformer:
 ################################################################################
 ##----------------- End Functions to save table to files ---------------------##
 ################################################################################
+    # Now create a way to use function by passing string parameter
+    def pick_format(self, function, filename):
+        funs = {
+            'mk_csv':self.mk_csv,
+            'mk_eml':self.mk_eml,
+            'mk_html':self.mk_html,
+            'mk_ics':self.mk_ics,
+            'mk_tex':self.mk_tex,
+            'get_csv':self.get_csv,
+            'get_eml':self.get_html,
+            'get_html':self.get_html,
+            'get_ics':self.get_ics,
+            'get_tex':self.get_tex
+        }
+        funs[function](filename)
+################################# THE END ######################################
 
 if __name__ == "__main__":
     link=('http://www.genevievedupuis.com/BloodBowl/WeatherTable.php')
