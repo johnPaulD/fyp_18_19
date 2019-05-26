@@ -88,6 +88,21 @@ class Transformer:
             return page
         except FileExistsError: print('File not Found')
         except urllib.error.URLError: print('File or link does not exist')
+
+    def pick_format(self, function, filename):
+        funs = {
+            'mk_csv':mk_csv,
+            'mk_eml':mk_eml,
+            'mk_html':mk_html,
+            'mk_ics':mk_ics,
+            'mk_tex':mk_tex,
+            'get_csv':get_csv,
+            'get_eml':get_html,
+            'get_html': get_html,
+            'get_ics': get_ics,
+            'get_tex':get_tex
+        }
+        fun[function](filename)
 ################################################################################
 ##------------------------- End supporting functions -------------------------##
 ################################################################################
