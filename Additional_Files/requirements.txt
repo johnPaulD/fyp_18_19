@@ -1,5 +1,0 @@
-arrow
-ics
-icalendar
-pylatex
-TexSoup
