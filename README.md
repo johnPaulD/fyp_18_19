@@ -1,7 +1,7 @@
 # File Transformer
 
-Author: John Paul Mendy
-Email address: sc15jpm@leeds.ac.uk
+- Author: John Paul Mendy
+- Email address: sc15jpm@leeds.ac.uk
 
 
 A program Transforms structured data from one format to another. These are:
