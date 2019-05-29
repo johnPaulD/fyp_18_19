@@ -24,7 +24,7 @@ A program Transforms structured data from one format to another. These are:
 
 download and extract the zip file drom this repository or pull it from git using the following command
 
-> $ git pull https://gitlab.com/sc15jpm/fyp_sc15jpm_18_19.git
+> $ git clone https://gitlab.com/sc15jpm/fyp_sc15jpm_18_19.git
 
 Once done, open a terminal and navigate into the parent directory that contains the `requirements.txt` file. 
 
